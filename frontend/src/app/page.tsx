@@ -1,3 +1,4 @@
+// ReviewPilot AI Landing Page
 import React from 'react';
 
 export default function HomePage() {
