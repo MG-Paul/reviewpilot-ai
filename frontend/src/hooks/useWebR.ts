@@ -26,7 +26,7 @@ export function useWebR() {
       try {
         setLoading(true);
         // Dynamically load webR to avoid SSR (Server Side Rendering) issues in Next.js
-        const { WebR } = await import('@r-wasm/webr');
+        const { WebR } = await import('webr');
         const instance = new WebR();
         await instance.init();
 

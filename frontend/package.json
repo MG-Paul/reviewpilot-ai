@@ -9,14 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@r-wasm/webr": "^0.3.3",
     "axios": "^1.6.8",
     "lucide-react": "^0.359.0",
     "next": "14.1.4",
     "pdfjs-dist": "^4.0.379",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "recharts": "^2.12.3"
+    "recharts": "^2.12.3",
+    "webr": "^0.3.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
