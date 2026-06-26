@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: reviewpilot_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: reviewpilot
+      POSTGRES_PASSWORD: reviewpilot_password
+      POSTGRES_DB: reviewpilot_dev
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reviewpilot -d reviewpilot_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: reviewpilot_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: reviewpilot_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://reviewpilot:reviewpilot_password@postgres:5432/reviewpilot_dev
+      - REDIS_URL=redis://redis:6379/0
+      - CLERK_API_KEY=your_clerk_api_key
+      - OPENAI_API_KEY=your_openai_api_key
+      - R_SANDBOX_URL=http://r-sandbox:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+  r-sandbox:
+    build:
+      context: ./r-sandbox
+      dockerfile: Dockerfile
+    container_name: reviewpilot_r_sandbox
+    ports:
+      - "8080:8000"
+    environment:
+      - PORT=8000
+    volumes:
+      - ./r-sandbox:/usr/src/app
+
+volumes:
+  pgdata:
+  redisdata:
